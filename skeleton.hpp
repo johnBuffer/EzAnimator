@@ -19,24 +19,36 @@ class Point
 
 using PointPtr = std::shared_ptr<Point>;
 
+class Connector
+{
+	Connector(const Point& position) :
+		m_point(position),
+		m_parent(nullptr)
+	{}
+
+	Connector(const Point& position, PointPtr parent) :
+		m_point(position),
+		m_parent(parent)
+	{}
+
+	Point m_point;
+	PointPtr m_parent;
+
+	std::vector<PointPtr> m_children;
+};
+
+using ConnectorPtr = std::shared_ptr<Connector>;
+
 class Bone
 {
-	Bone(PointPtr p1, PointPtr p2):
+	Bone(ConnectorPtr p1, ConnectorPtr p2):
 		m_p1(p1),
 		m_p2(p2)
 	{}
 
-	PointPtr m_p1;
-	PointPtr m_p2;
+	ConnectorPtr m_p1;
+	ConnectorPtr m_p2;
 };
 
 using BonePtr = std::shared_ptr<Bone>;
 
-class Connector
-{
-	PointPtr m_parent;
-	PointPtr m_point;
-
-	std::vector<PointPtr> m_children;
-	std::vector<BonePtr> m_bones;
-};
