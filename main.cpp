@@ -1,22 +1,22 @@
 #include <SFML/Graphics.hpp>
+#include "GUI.hpp"
+
+#include "skeleton.hpp"
 
 int main()
 {
-	sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
-	sf::CircleShape shape(100.f);
-	shape.setFillColor(sf::Color::Green);
+	constexpr uint32_t WIN_WIDTH = 1024;
+	constexpr uint32_t WIN_HEIGHT = 768;
+	sf::RenderWindow window(sf::VideoMode(WIN_WIDTH, WIN_HEIGHT), "EzAnimator");
 
+	GUI gui(window);
+	
 	while (window.isOpen())
 	{
-		sf::Event event;
-		while (window.pollEvent(event))
-		{
-			if (event.type == sf::Event::Closed)
-				window.close();
-		}
+		gui.handleEvents();
 
 		window.clear();
-		window.draw(shape);
+		
 		window.display();
 	}
 
