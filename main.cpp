@@ -2,6 +2,7 @@
 #include "GUI.hpp"
 
 #include "skeleton.hpp"
+#include "Header.h"
 
 int main()
 {
@@ -10,7 +11,7 @@ int main()
 	sf::RenderWindow window(sf::VideoMode(WIN_WIDTH, WIN_HEIGHT), "EzAnimator");
 
 	GUI gui(window);
-	
+
 	while (window.isOpen())
 	{
 		gui.handleEvents();

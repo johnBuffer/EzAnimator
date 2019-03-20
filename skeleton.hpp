@@ -3,41 +3,42 @@
 #include <vector>
 #include <memory>
 
+constexpr float DEFAULT_BONE_LENGTH = 150.0f;
+
 // Base class representing a 2D point
-class Point
-{
-public:
-	Point(const up::Vec2& position) :
-		m_position(position)
-	{}
-
-	Point(float x, float y):
-		m_position(x, y)
-	{}
-
-private:
-	// Radius is used for physics and GUI purpose
-	float m_radius;
-	up::Vec2 m_position;
-};
-using PointPtr = std::shared_ptr<Point>;
+using PointPtr = std::shared_ptr<up::Vec2>;
 
 // A connector is point to which it is possible to connect a bone
 class Connector
 {
 public:
-	Connector(const Point& position) :
-		m_point(position),
+	Connector(const up::Vec2& position) :
+		m_point(std::make_shared<up::Vec2>(position)),
 		m_parent(nullptr)
 	{}
 
-	Connector(const Point& position, PointPtr parent) :
-		m_point(position),
+	Connector(const up::Vec2& position, PointPtr parent) :
+		m_point(std::make_shared<up::Vec2>(position)),
 		m_parent(parent)
 	{}
 
+	const up::Vec2& position() const
+	{
+		return *m_point;
+	}
+
+	PointPtr point()
+	{
+		return m_point;
+	}
+
+	PointPtr parent()
+	{
+		return m_parent;
+	}
+
 public:
-	Point m_point;
+	PointPtr m_point;
 	PointPtr m_parent;
 
 	std::vector<PointPtr> m_children;
@@ -67,7 +68,19 @@ public:
 		m_root({ 0.0f, 0.0f })
 	{}
 
-	void addBone(ConnectorPtr attach);
+	void addBone(ConnectorPtr attach)
+	{
+		PointPtr parent_position(attach->point());
+		up::Vec2 new_connector_position(*parent_position + up::Vec2(0, DEFAULT_BONE_LENGTH));
+
+		// Create new bone and connector
+		std::shared_ptr<Connector> new_connector = std::make_shared<Connector>(new_connector_position, parent_position);
+		std::shared_ptr<Bone>      new_bone      = std::make_shared<Bone>(attach, new_connector);
+
+		// Add them to the skeleton
+		m_connectors.push_back(new_connector);
+		m_bones.push_back(new_bone);
+	}
 
 private:
 	Connector m_root;
