@@ -9,6 +9,11 @@ public:
 
 	void handleEvents();
 
+	void addConnector(const up::Vec2& position)
+	{
+
+	}
+
 private:
 	sf::RenderWindow& m_window;
 };
