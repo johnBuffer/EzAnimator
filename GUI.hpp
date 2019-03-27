@@ -12,12 +12,15 @@ public:
 		m_event_manager(window),
 		m_root(nullptr),
 		m_selected(nullptr),
-		m_clicked(false)
+		m_clicked(false),
+		m_playing(false)
 	{
 		m_event_manager.addEventCallback(sf::Event::EventType::Closed, [&](const sf::Event&) {m_window.close(); });
 		m_event_manager.addMousePressedCallback(sf::Mouse::Left, [&](const sf::Event&) { clic(); });
 		m_event_manager.addMouseReleasedCallback(sf::Mouse::Left, [&](const sf::Event&) { unclic(); });
 		m_event_manager.addKeyReleasedCallback(sf::Keyboard::A, [&](const sf::Event&) { addConnector(); });
+		m_event_manager.addKeyReleasedCallback(sf::Keyboard::K, [&](const sf::Event&) { m_skeleton.makeKey(); });
+		m_event_manager.addKeyReleasedCallback(sf::Keyboard::Space, [&](const sf::Event&) { m_playing = !m_playing; if (!m_playing) { m_skeleton.reset(); } });
 
 		m_root = m_skeleton.root();
 		select(m_root);
@@ -37,6 +40,18 @@ public:
 
 				m_selected->setAngle(v.angle());
 			}
+		}
+
+		if (m_playing)
+		{
+			m_time += 0.01f;
+			if (m_time >= 1.0f)
+			{
+				m_time = 0.0f;
+				m_skeleton.nextKey();
+			}
+
+			m_skeleton.update(m_time);
 		}
 	}
 
@@ -84,6 +99,9 @@ private:
 	bool m_clicked;
 	sf::Vector2i m_mouse_position;
 	sf::Vector2i m_clic_position;
+
+	float m_time;
+	bool m_playing;
 
 	void clic()
 	{

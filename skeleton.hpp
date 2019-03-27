@@ -2,8 +2,9 @@
 #include "vec2.h"
 #include <vector>
 #include <memory>
+#include <iostream>
 
-constexpr float DEFAULT_BONE_LENGTH = 150.0f;
+constexpr float DEFAULT_BONE_LENGTH = 75.0f;
 
 class Connector;
 class Bone;
@@ -21,14 +22,20 @@ public:
 	Connector(const up::Vec2& position) :
 		m_point(position),
 		m_parent(nullptr),
-		m_angle(0.0f)
+		m_current_key(0),
+		m_keys({ 0.0f })
 	{}
 
 	Connector(const up::Vec2& position, ConnectorPtr parent) :
 		m_point(position),
 		m_parent(parent),
-		m_angle(0.0f)
-	{}
+		m_current_key(0)
+	{
+		if (m_parent)
+		{
+			updatePosition();
+		}
+	}
 
 	const up::Vec2& point() const
 	{
@@ -53,6 +60,13 @@ public:
 	void setAngle(float angle)
 	{
 		m_angle = angle - m_parent->angle();
+		std::cout << m_angle << std::endl;
+		updatePosition();
+	}
+
+	void setRelAngle(float angle)
+	{
+		m_angle = angle;
 		updatePosition();
 	}
 
@@ -61,10 +75,57 @@ public:
 		m_children.emplace_back(child);
 	}
 
+	void addKey(float angle)
+	{
+		m_keys.push_back(angle);
+	}
+
+	void update(float dt)
+	{
+		if (m_parent && !m_keys.empty())
+		{
+			float current_angle = m_keys[m_current_key];
+			float next_angle = nextAngle();
+
+			float delta = next_angle - current_angle;
+			//if (stddelta)
+
+			setRelAngle(current_angle + delta * dt);
+		}
+	}
+
+	float nextAngle()
+	{
+		if (m_current_key < m_keys.size() - 1)
+		{
+			return m_keys[m_current_key + 1];
+		}
+
+		return m_keys[0];
+	}
+
+	void nextKey()
+	{
+		(++m_current_key) %= m_keys.size();
+	}
+
+	void makeKey()
+	{
+		m_keys.push_back(m_angle);
+	}
+
+	void reset()
+	{
+		m_current_key = m_keys.size() - 1;
+	}
+
 private:
 	// Geometry
 	up::Vec2 m_point;
 	float m_angle;
+
+	uint32_t m_current_key;
+	std::vector<float> m_keys;
 
 	void updatePosition()
 	{

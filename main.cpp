@@ -9,6 +9,7 @@ int main()
 	constexpr uint32_t WIN_WIDTH = 1024;
 	constexpr uint32_t WIN_HEIGHT = 768;
 	sf::RenderWindow window(sf::VideoMode(WIN_WIDTH, WIN_HEIGHT), "EzAnimator");
+	window.setVerticalSyncEnabled(true);
 
 	GUI gui(window);
 

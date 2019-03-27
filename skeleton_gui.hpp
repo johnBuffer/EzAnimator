@@ -34,9 +34,19 @@ public:
 	{
 		constexpr float radius = 8.0f;
 		constexpr float selection_radius = radius * 1.4f;
-		
+
 		const up::Vec2& pos(m_connector->point());
 
+		if (m_connector->parent())
+		{
+			const up::Vec2& pos_parent(m_connector->parent()->point());
+			sf::VertexArray va(sf::Lines, 2);
+			va[0].position = sf::Vector2f(pos.x, pos.y);
+			va[1].position = sf::Vector2f(pos_parent.x, pos_parent.y);
+
+			target->draw(va);
+		}
+		
 		if (m_selected)
 		{
 			sf::CircleShape c_selection(selection_radius);
@@ -70,6 +80,16 @@ public:
 		m_selected = is_selected;
 	}
 
+	void update(float dt)
+	{
+		m_connector->update(dt);
+	}
+
+	void nextKey()
+	{
+		m_connector->nextKey();
+	}
+
 private:
 	ConnectorPtr m_connector;
 	bool m_selected;
@@ -93,6 +113,38 @@ public:
 		for (GUIConnectorPtr connector : m_connectors)
 		{
 			connector->draw(target);
+		}
+	}
+
+	void update(float time)
+	{
+		for (GUIConnectorPtr connector : m_connectors)
+		{
+			connector->update(time);
+		}
+	}
+
+	void nextKey()
+	{
+		for (GUIConnectorPtr connector : m_connectors)
+		{
+			connector->nextKey();
+		}
+	}
+
+	void makeKey()
+	{
+		for (GUIConnectorPtr connector : m_connectors)
+		{
+			connector->connector()->makeKey();
+		}
+	}
+
+	void reset()
+	{
+		for (GUIConnectorPtr connector : m_connectors)
+		{
+			connector->connector()->reset();
 		}
 	}
 
