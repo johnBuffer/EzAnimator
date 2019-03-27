@@ -1,19 +1,100 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "skeleton_gui.hpp"
+#include "event_manager.hpp"
 
 class GUI
 {
 public:
-	GUI(sf::RenderWindow& window);
-
-	void handleEvents();
-
-	void addConnector(const up::Vec2& position)
+	GUI(sf::RenderWindow& window) :
+		m_skeleton(up::Vec2(512, 300)),
+		m_window(window),
+		m_event_manager(window),
+		m_root(nullptr),
+		m_selected(nullptr),
+		m_clicked(false)
 	{
+		m_event_manager.addEventCallback(sf::Event::EventType::Closed, [&](const sf::Event&) {m_window.close(); });
+		m_event_manager.addMousePressedCallback(sf::Mouse::Left, [&](const sf::Event&) { clic(); });
+		m_event_manager.addMouseReleasedCallback(sf::Mouse::Left, [&](const sf::Event&) { unclic(); });
+		m_event_manager.addKeyReleasedCallback(sf::Keyboard::A, [&](const sf::Event&) { addConnector(); });
 
+		m_root = m_skeleton.root();
+		select(m_root);
+	}
+
+	void handleEvents()
+	{
+		m_mouse_position = sf::Mouse::getPosition(m_window);
+		m_event_manager.processEvents();
+
+		if (m_clicked)
+		{
+			if (m_selected && m_selected->connector()->parent())
+			{
+				const up::Vec2 mouse(m_mouse_position.x, m_mouse_position.y);
+				const up::Vec2 v(mouse - m_selected->connector()->parent()->point());
+
+				m_selected->setAngle(v.angle());
+			}
+		}
+	}
+
+	void addConnector()
+	{
+		if (m_selected)
+		{
+			const up::Vec2& position(m_selected->connector()->point());
+			m_skeleton.addConnector(m_selected, position + up::Vec2(0.0f, DEFAULT_BONE_LENGTH));
+		}
+	}
+
+	GUIConnectorPtr getConnectorAtMouse()
+	{
+		const up::Vec2 position(m_mouse_position.x, m_mouse_position.y);
+
+		return m_skeleton.getConnectorAt(position);
+	}
+
+	void draw()
+	{
+		m_skeleton.draw(&m_window);
+	}
+
+	void select(GUIConnectorPtr connector)
+	{
+		if (m_selected)
+			m_selected->selected(false);
+
+		if (connector)
+			connector->selected(true);
+		
+		m_selected = connector;
 	}
 
 private:
+	sfev::EventManager m_event_manager;
 	sf::RenderWindow& m_window;
+
+	GUIConnectorPtr m_root;
+	GUIConnectorPtr m_selected;
+
+	GUISkeleton m_skeleton;
+
+	bool m_clicked;
+	sf::Vector2i m_mouse_position;
+	sf::Vector2i m_clic_position;
+
+	void clic()
+	{
+		m_clicked = true;
+		m_clic_position = m_mouse_position;
+
+		select(getConnectorAtMouse());
+	}
+
+	void unclic()
+	{
+		m_clicked = false;
+	}
 };

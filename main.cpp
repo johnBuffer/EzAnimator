@@ -12,13 +12,13 @@ int main()
 
 	GUI gui(window);
 
-
-
 	while (window.isOpen())
 	{
 		gui.handleEvents();
 
 		window.clear();
+
+		gui.draw();
 		
 		window.display();
 	}

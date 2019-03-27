@@ -10,22 +10,22 @@ struct Vec2
 	Vec2() noexcept :
 		x(0.0f),
 		y(0.0f),
-		_length(-1.0f)
+		m_length(-1.0f)
 	{}
 
 	Vec2(float x, float y) noexcept :
 		x(x),
 		y(y),
-		_length(-1.0)
+		m_length(-1.0)
 	{}
 
 	~Vec2() noexcept = default;
 
 	float length() const
 	{
-		if (_length < 0.0f)
-			_length = sqrt(x*x + y*y);
-		return _length;
+		if (m_length < 0.0f)
+			m_length = sqrt(x*x + y*y);
+		return m_length;
 	}
 
 	float length2() const
@@ -40,7 +40,7 @@ struct Vec2
 		x /= l;
 		y /= l;
 
-		_length = 1.0f;
+		m_length = 1.0f;
 	}
 
 	Vec2 getNormal() const
@@ -54,10 +54,17 @@ struct Vec2
 		y += v.y;
 	}
 
+	float angle() const
+	{
+		float a(acos(x / length()));
+
+		return y > 0 ? a : -a;
+	}
+
 	float x, y;
 
 private:
-	mutable float _length;
+	mutable float m_length;
 };
 
 inline Vec2 operator+(const Vec2& v1,const Vec2& v2)
