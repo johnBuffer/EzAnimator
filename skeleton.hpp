@@ -15,19 +15,19 @@ using BonePtr = std::shared_ptr<Bone>;
 using SkeletonPtr = std::shared_ptr<Skeleton>;
 using PointPtr = std::shared_ptr<up::Vec2>;
 
+constexpr float PI = 3.141592653f;
+
 // A connector is point to which it is possible to connect a bone
 class Connector
 {
 public:
 	Connector(const up::Vec2& position) :
-		m_point(position),
 		m_parent(nullptr),
-		m_current_key(0),
-		m_keys({ 0.0f })
+		m_point(position),
+		m_current_key(0)
 	{}
 
-	Connector(const up::Vec2& position, ConnectorPtr parent) :
-		m_point(position),
+	Connector(ConnectorPtr parent) :
 		m_parent(parent),
 		m_current_key(0)
 	{
@@ -59,8 +59,8 @@ public:
 
 	void setAngle(float angle)
 	{
-		m_angle = angle - m_parent->angle();
-		std::cout << m_angle << std::endl;
+		m_angle = fmod(angle - m_parent->angle(), 2*PI);
+		std::cout << angle << std::endl;
 		updatePosition();
 	}
 
@@ -88,7 +88,16 @@ public:
 			float next_angle = nextAngle();
 
 			float delta = next_angle - current_angle;
-			//if (stddelta)
+
+			if (fabs(delta) > PI)
+			{
+				if (current_angle < 0)
+					current_angle += 2 * PI;
+				else
+					next_angle += 2 * PI;
+			}
+
+			delta = next_angle - current_angle;
 
 			setRelAngle(current_angle + delta * dt);
 		}
@@ -170,22 +179,9 @@ public:
 		m_root(std::make_shared<Connector>(position))
 	{}
 
-	void addBone(ConnectorPtr attach)
+	ConnectorPtr addConnector(ConnectorPtr parent)
 	{
-		up::Vec2 new_connector_position(attach->point() + up::Vec2(0, DEFAULT_BONE_LENGTH));
-
-		// Create new bone and connector
-		std::shared_ptr<Connector> new_connector = std::make_shared<Connector>(new_connector_position, attach);
-		std::shared_ptr<Bone>      new_bone      = std::make_shared<Bone>(attach, new_connector);
-
-		// Add them to the skeleton
-		m_connectors.push_back(new_connector);
-		m_bones.push_back(new_bone);
-	}
-
-	ConnectorPtr addConnector(ConnectorPtr parent, const up::Vec2& position)
-	{
-		ConnectorPtr new_connector(std::make_shared<Connector>(position, parent));
+		ConnectorPtr new_connector(std::make_shared<Connector>(parent));
 		parent->addChild(new_connector);
 		m_connectors.push_back(new_connector);
 

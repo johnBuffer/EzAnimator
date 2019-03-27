@@ -44,7 +44,7 @@ public:
 
 		if (m_playing)
 		{
-			m_time += 0.01f;
+			m_time += 0.016f;
 			if (m_time >= 1.0f)
 			{
 				m_time = 0.0f;
@@ -59,8 +59,7 @@ public:
 	{
 		if (m_selected)
 		{
-			const up::Vec2& position(m_selected->connector()->point());
-			m_skeleton.addConnector(m_selected, position + up::Vec2(0.0f, DEFAULT_BONE_LENGTH));
+			m_skeleton.addConnector(m_selected);
 		}
 	}
 

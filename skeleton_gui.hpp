@@ -164,9 +164,9 @@ public:
 		return nullptr;
 	}
 
-	void addConnector(GUIConnectorPtr parent, const up::Vec2& position)
+	void addConnector(GUIConnectorPtr parent)
 	{
-		ConnectorPtr new_connector(m_skeleton.addConnector(parent->connector(), position));
+		ConnectorPtr new_connector(m_skeleton.addConnector(parent->connector()));
 		m_connectors.emplace_back(std::make_shared<GUIConnector>(new_connector));
 	}
 
