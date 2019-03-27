@@ -14,12 +14,14 @@ class Connector
 public:
 	Connector(const up::Vec2& position) :
 		m_point(std::make_shared<up::Vec2>(position)),
-		m_parent(nullptr)
+		m_parent(nullptr),
+		m_angle(0.0f)
 	{}
 
 	Connector(const up::Vec2& position, PointPtr parent) :
 		m_point(std::make_shared<up::Vec2>(position)),
-		m_parent(parent)
+		m_parent(parent),
+		m_angle(0.0f)
 	{}
 
 	const up::Vec2& position() const
@@ -40,6 +42,8 @@ public:
 public:
 	PointPtr m_point;
 	PointPtr m_parent;
+
+	float m_angle;
 
 	std::vector<PointPtr> m_children;
 };
