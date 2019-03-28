@@ -3,24 +3,11 @@
 #include "skeleton.hpp"
 #include <SFML/Graphics.hpp>
 
-class GUIBone;
 class GUIConnector;
 class GUISkeleton;
 
 using GUIConnectorPtr = std::shared_ptr<GUIConnector>;
-using GUIBonePtr = std::shared_ptr<GUIBone>;
 using GUISkeletonPtr = std::shared_ptr<GUISkeleton>;
-
-class GUIBone
-{
-public:
-	GUIBone(BonePtr bone) :
-		m_bone(bone)
-	{}
-
-private:
-	BonePtr m_bone;
-};
 
 class GUIConnector
 {

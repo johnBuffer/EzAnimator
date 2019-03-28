@@ -7,11 +7,9 @@
 constexpr float DEFAULT_BONE_LENGTH = 75.0f;
 
 class Connector;
-class Bone;
 class Skeleton;
 
 using ConnectorPtr = std::shared_ptr<Connector>;
-using BonePtr = std::shared_ptr<Bone>;
 using SkeletonPtr = std::shared_ptr<Skeleton>;
 using PointPtr = std::shared_ptr<up::Vec2>;
 
@@ -62,7 +60,6 @@ public:
 	void setAngle(float angle)
 	{
 		m_angle = fmod(angle - m_parent->angle(), 2*PI);
-		std::cout << angle << std::endl;
 		updatePosition();
 	}
 
@@ -82,26 +79,33 @@ public:
 		m_keys.push_back(angle);
 	}
 
-	void update(float dt)
+	void update(float ratio)
 	{
 		if (m_parent && !m_keys.empty())
 		{
+			// Fetch current angle
 			float current_angle = m_keys[m_current_key];
+			
+			// Get next angle
 			float next_angle = getNextAngle();
 
+			// Compute delta between the two 
 			float delta = next_angle - current_angle;
 
+			// Check if delta is the shortest one
 			if (fabs(delta) > PI)
 			{
 				if (current_angle < 0)
 					current_angle += 2 * PI;
 				else
 					next_angle += 2 * PI;
+				
+				// If not update
+				delta = next_angle - current_angle;
 			}
 
-			delta = next_angle - current_angle;
-
-			setRelAngle(current_angle + delta * dt);
+			// Interpolate angles
+			setRelAngle(current_angle + delta * ratio);
 		}
 	}
 
@@ -164,20 +168,6 @@ private:
 	std::vector<ConnectorPtr> m_children;
 };
 
-// A bone consist of a distance constraint between two connectors
-class Bone
-{
-public:
-	Bone(ConnectorPtr p1, ConnectorPtr p2):
-		m_p1(p1),
-		m_p2(p2)
-	{}
-
-private:
-	ConnectorPtr m_p1;
-	ConnectorPtr m_p2;
-};
-
 // A skeleton is a hierachy of bones and connectors
 class Skeleton
 {
@@ -203,6 +193,5 @@ public:
 private:
 	ConnectorPtr m_root;
 	std::vector<ConnectorPtr> m_connectors;
-	std::vector<BonePtr> m_bones;
 };
 
