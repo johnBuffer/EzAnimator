@@ -15,15 +15,10 @@ public:
 		m_clicked(false),
 		m_playing(false)
 	{
-		m_event_manager.addEventCallback(sf::Event::EventType::Closed, [&](const sf::Event&) {m_window.close(); });
-		m_event_manager.addMousePressedCallback(sf::Mouse::Left, [&](const sf::Event&) { clic(); });
-		m_event_manager.addMouseReleasedCallback(sf::Mouse::Left, [&](const sf::Event&) { unclic(); });
-		m_event_manager.addKeyReleasedCallback(sf::Keyboard::A, [&](const sf::Event&) { addConnector(); });
-		m_event_manager.addKeyReleasedCallback(sf::Keyboard::K, [&](const sf::Event&) { m_skeleton.makeKey(); });
-		m_event_manager.addKeyReleasedCallback(sf::Keyboard::Space, [&](const sf::Event&) { m_playing = !m_playing; if (!m_playing) { m_skeleton.reset(); } });
-
 		m_root = m_skeleton.root();
 		select(m_root);
+
+		initCallbacks();
 	}
 
 	void handleEvents()
@@ -101,6 +96,16 @@ private:
 
 	float m_time;
 	bool m_playing;
+
+	void initCallbacks()
+	{
+		m_event_manager.addEventCallback(sf::Event::EventType::Closed, [&](const sf::Event&) {m_window.close(); });
+		m_event_manager.addMousePressedCallback(sf::Mouse::Left, [&](const sf::Event&) { clic(); });
+		m_event_manager.addMouseReleasedCallback(sf::Mouse::Left, [&](const sf::Event&) { unclic(); });
+		m_event_manager.addKeyReleasedCallback(sf::Keyboard::A, [&](const sf::Event&) { addConnector(); });
+		m_event_manager.addKeyReleasedCallback(sf::Keyboard::K, [&](const sf::Event&) { m_skeleton.makeKey(); });
+		m_event_manager.addKeyReleasedCallback(sf::Keyboard::Space, [&](const sf::Event&) { m_playing = !m_playing; if (!m_playing) { m_skeleton.reset(); } });
+	}
 
 	void clic()
 	{

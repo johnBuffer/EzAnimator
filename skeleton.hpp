@@ -24,12 +24,14 @@ public:
 	Connector(const up::Vec2& position) :
 		m_parent(nullptr),
 		m_point(position),
-		m_current_key(0)
+		m_current_key(0),
+		m_angle(0.0f)
 	{}
 
 	Connector(ConnectorPtr parent) :
 		m_parent(parent),
-		m_current_key(0)
+		m_current_key(0),
+		m_angle(0.0f)
 	{
 		if (m_parent)
 		{
@@ -85,7 +87,7 @@ public:
 		if (m_parent && !m_keys.empty())
 		{
 			float current_angle = m_keys[m_current_key];
-			float next_angle = nextAngle();
+			float next_angle = getNextAngle();
 
 			float delta = next_angle - current_angle;
 
@@ -103,7 +105,7 @@ public:
 		}
 	}
 
-	float nextAngle()
+	float getNextAngle()
 	{
 		if (m_current_key < m_keys.size() - 1)
 		{
@@ -126,6 +128,8 @@ public:
 	void reset()
 	{
 		m_current_key = m_keys.size() - 1;
+		m_angle = m_keys[m_current_key];
+		updatePosition();
 	}
 
 private:
@@ -138,6 +142,9 @@ private:
 
 	void updatePosition()
 	{
+		if (!m_parent)
+			return;
+
 		// Get abs angle
 		float base_angle = this->angle();
 

@@ -8,7 +8,11 @@ int main()
 {
 	constexpr uint32_t WIN_WIDTH = 1024;
 	constexpr uint32_t WIN_HEIGHT = 768;
-	sf::RenderWindow window(sf::VideoMode(WIN_WIDTH, WIN_HEIGHT), "EzAnimator");
+
+	sf::ContextSettings settings;
+	settings.antialiasingLevel = 8;
+
+	sf::RenderWindow window(sf::VideoMode(WIN_WIDTH, WIN_HEIGHT), "EzAnimator", sf::Style::Default, settings);
 	window.setVerticalSyncEnabled(true);
 
 	GUI gui(window);

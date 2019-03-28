@@ -33,7 +33,7 @@ public:
 	void draw(sf::RenderTarget* target)
 	{
 		constexpr float radius = 8.0f;
-		constexpr float selection_radius = radius * 1.4f;
+		constexpr float selection_radius = 16.0f;
 
 		const up::Vec2& pos(m_connector->point());
 
